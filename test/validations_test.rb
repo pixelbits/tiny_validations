@@ -5,23 +5,28 @@ class ValidationsTest < Minitest::Unit::TestCase
   def test_set_contexts
     assert @user.respond_to?(:context_validations_password_reset)
     assert @user.respond_to?(:context_validations_facebook_auth)
-
-    assert @user.respond_to?(:context_validation)
+    assert @user.respond_to?(:context_validations_user_subscription)
   end
 
-  def test_validatios_when
-    # context :password_reset
-    @user.context = :password_reset
-    @user.password = 'pass19822'
-    assert @user.valid?
+  def test_validations_when
+    # context: :password_reset
+    @user.valid?(:password_reset)
+    assert_includes @user.errors, :password,
+      'password is not validating to :password_reset context'
 
-    #context :facebook_auth
-    @user.context = :facebook_auth
-    @user.fb_token_secret = 'fff22111fff'
-    assert_equal false, @user.valid?
+    # context: :facebook_auth
+    @user.valid?(:facebook_auth)
+    assert_includes @user.errors, :fb_token_secret,
+      'fb_token_secredt is not validating to :facebook_auth context'
+  end
 
-    @user.city = 'New York'
-    @user.state = 'NY'
-    assert @user.valid?
+  def test_validations_when_not
+    # context: :password_reset
+    @user.valid?(:password_reset)
+    asserts_when_not
+
+    # context: :user_subscription
+    @user.valid?(:user_subscription)
+    asserts_when_not
   end
 end

@@ -34,7 +34,7 @@ class User < ActiveRecord::Base
 
   validates :name, :email, presence: true
 
-  validations_when_not :password_reset do |m|
+  validations_when_not [:password_reset, :user_subscription] do |m|
     m.validates :city, :state, presence: true
     m.validates_inclusion_of :state, in: ['NY']
   end
@@ -46,7 +46,6 @@ class User < ActiveRecord::Base
   validations_when :password_reset do |m|
     m.validates :password, presence: true
   end
-
 end
 
 
@@ -56,6 +55,14 @@ class Minitest::Unit::TestCase
     @user = User.new(name: 'Nando Sousa',
                      email: 'nandosousafr@gmail.com')
 
+  end
+
+  def asserts_when_not
+    refute_includes @user.errors, :city,
+      'city is validating to :password_reset_context'
+
+    refute_includes @user.errors, :state,
+      'state is validating to :password_reset_context'
   end
 end
 

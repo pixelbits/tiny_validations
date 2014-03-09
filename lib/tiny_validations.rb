@@ -5,10 +5,6 @@ require 'active_record'
 module TinyValidations
   extend ActiveSupport::Concern
 
-  included do
-    attr_accessor :context_validation
-  end
-
   def validations_when(key , &block)
     validations_base(key, &block)
   end
@@ -17,22 +13,25 @@ module TinyValidations
     validations_base(key, :unless, &block)
   end
 
-  def validations_base( key, condition = :if, &block)
+  def validations_base(rule, condition = :if, &block)
+    if rule.is_a?(Array)
+      keys = rule.map { |r| context_key(r) }
+    else
+      keys = Array(context_key(rule))
+    end
+
     options = {}
-    options[condition] = -> { context_key(key) == context_key(context_validation) }
+    options[condition] = -> { keys.include?(context_key(validation_context)) }
 
     instance_eval do
-      attr_accessor context_key(key)
-
-      with_options(options) do |validations|
-        yield validations
-      end
+      keys.each { |k| attr_accessor k }
+      with_options(options) { |validations| yield validations }
     end
   end
 
   def context=(key)
     if self.respond_to?(context_key(key))
-      self.send("context_validation=", key)
+      self.validation_context = key
     else
       raise 'Context not found'
     end
