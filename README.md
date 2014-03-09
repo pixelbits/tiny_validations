@@ -1,12 +1,22 @@
 # Context Validations
 
+## Get Started
+
+Add this line to your application’s Gemfile:
+
+```ruby
+gem 'tiny_validations'
+```
+
+Add TinyValidations to models you want to add this.
+
 ```ruby
 class User < ActiveRecord::Base
-  include ContextValidations
+  include TinyValidations
 
   validates :name, :email, presence: true
 
-  validations_when_not :email_subscription do |model|
+  validations_when_not [:email_subscription, :upgrading_account] do |model|
     model.validates :city, :state, :country, presence: true
   end
 
@@ -16,16 +26,13 @@ class User < ActiveRecord::Base
 end
 
 @user = user.new(name: 'Nando Sousa', email: 'nandosousafr@gmail.com')
-@ser.context = :email_subscription
-@user.save #=> true
+@user.valid?(context: :email_subscription)
+#=> true
 
-@user.context = :upgrading_account
-@user.valid? #=> false
+@user.valid?(:upgrading_account) 
+#=> false
 
 @user.credit_card = '324324-242342-2342423-232423'
-@user.save #=> true
-
-
-
-
+@user.valid?(context: :upgrading_account) 
+#=> true
 ```
