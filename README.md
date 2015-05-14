@@ -26,13 +26,13 @@ class User < ActiveRecord::Base
 end
 
 @user = user.new(name: 'Nando Sousa', email: 'nandosousafr@gmail.com')
-@user.valid?(context: :email_subscription)
+@user.valid?(:email_subscription)
 #=> true
 
 @user.valid?(:upgrading_account) 
 #=> false
 
 @user.credit_card = '324324-242342-2342423-232423'
-@user.valid?(context: :upgrading_account) 
+@user.valid?(:upgrading_account) 
 #=> true
 ```
