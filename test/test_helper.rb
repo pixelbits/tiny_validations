@@ -15,7 +15,7 @@ ActiveRecord::Base.default_timezone = :utc
 ActiveRecord::Base.time_zone_aware_attributes = true
 
 # migrations
-ActiveRecord::Base.establish_connection :adapter => 'postgresql', :database => 'tiny_validation_test'
+ActiveRecord::Base.establish_connection :adapter => 'sqlite3', :database => 'tiny_validation_test'
 
 ActiveRecord::Migration.create_table :users, force: true do |t|
   t.string :name
